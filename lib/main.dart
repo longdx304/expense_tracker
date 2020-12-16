@@ -18,6 +18,9 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatelessWidget {
+  final titleController = TextEditingController();
+  final amountController = TextEditingController();
+
   final List<Transaction> transactions = [
     Transaction(
       id: 't1',
@@ -56,11 +59,13 @@ class MyHomePage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   TextField(
+                    controller: titleController,
                     decoration: InputDecoration(
                       labelText: 'Title',
                     ),
                   ),
                   TextField(
+                    controller: amountController,
                     decoration: InputDecoration(
                       labelText: 'Amount',
                     ),
@@ -70,7 +75,10 @@ class MyHomePage extends StatelessWidget {
                       primary: Colors.purple,
                     ),
                     child: Text('Add Transaction'),
-                    onPressed: () {},
+                    onPressed: () {
+                      print(
+                          '${titleController.text} - ${amountController.text}');
+                    },
                   )
                 ],
               ),
