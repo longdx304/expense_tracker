@@ -71,6 +71,11 @@ class _MyHomePageState extends State<MyHomePage> {
         .toList();
   }
 
+  void _deleteTransaction(String id) {
+    setState(() =>
+        _userTransactions.removeWhere((transaction) => transaction.id == id));
+  }
+
   void _addNewTransaction({
     String title,
     double amount,
@@ -113,7 +118,10 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           children: [
             Chart(_recentTransactions),
-            TransactionList(_userTransactions),
+            TransactionList(
+              transactions: _userTransactions,
+              deleteTransaction: _deleteTransaction,
+            ),
           ],
         ),
       ),
