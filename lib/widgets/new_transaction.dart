@@ -13,17 +13,21 @@ class NewTransaction extends StatefulWidget {
 class _NewTransactionState extends State<NewTransaction> {
   final _titleController = TextEditingController();
   final _amountController = TextEditingController();
-  DateTime _selectedDate;
+  DateTime _selectedDate = DateTime.now();
 
   void _submitData() {
+    if (_titleController.text.isEmpty || _amountController.text.isEmpty) return;
+
     final enteredTitle = _titleController.text;
     final enteredAmount = double.parse(_amountController.text);
 
-    if (enteredTitle.isEmpty || enteredAmount <= 0) return;
+    if (enteredTitle.isEmpty || enteredAmount <= 0 || _selectedDate == null)
+      return;
 
     widget.addTx(
       title: enteredTitle,
       amount: enteredAmount,
+      chosenDate: _selectedDate,
     );
 
     Navigator.of(context).pop();
@@ -47,6 +51,26 @@ class _NewTransactionState extends State<NewTransaction> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
+            Container(
+              height: 70,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(_selectedDate == null
+                        ? 'No Date Choosen!'
+                        : 'Spent Date: ${DateFormat.yMd().format(_selectedDate)}'),
+                  ),
+                  FlatButton(
+                    textColor: Theme.of(context).primaryColor,
+                    child: Text(
+                      'Choose Date',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    onPressed: _presentDatePicker,
+                  ),
+                ],
+              ),
+            ),
             TextField(
               controller: _titleController,
               decoration: InputDecoration(
@@ -61,26 +85,6 @@ class _NewTransactionState extends State<NewTransaction> {
                 labelText: 'Amount',
               ),
               onSubmitted: (_) => _submitData(),
-            ),
-            Container(
-              height: 70,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(_selectedDate == null
-                        ? 'No Date Choosen!'
-                        : 'Picked Date: ${DateFormat.yMd().format(_selectedDate)}'),
-                  ),
-                  FlatButton(
-                    textColor: Theme.of(context).primaryColor,
-                    child: Text(
-                      'Choose Date',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    onPressed: _presentDatePicker,
-                  ),
-                ],
-              ),
             ),
             RaisedButton(
               textColor: Theme.of(context).textTheme.button.color,
