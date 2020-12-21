@@ -106,8 +106,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final isLandscape =
-        MediaQuery.of(context).orientation == Orientation.landscape;
+    final mediaQuery = MediaQuery.of(context);
+    final isLandscape = mediaQuery.orientation == Orientation.landscape;
     final appBar = AppBar(
       actions: [
         IconButton(
@@ -117,9 +117,9 @@ class _MyHomePageState extends State<MyHomePage> {
       ],
       title: Text('Expense Tracker'),
     );
-    final contentHeight = MediaQuery.of(context).size.height -
+    final contentHeight = mediaQuery.size.height -
         appBar.preferredSize.height -
-        MediaQuery.of(context).padding.top;
+        mediaQuery.padding.top;
     final transactionListWidget = Container(
       height: contentHeight * 0.7,
       child: TransactionList(
