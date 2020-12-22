@@ -107,32 +107,74 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  List<Widget> _buildLandscapeContent({height, widget}) {
+    return [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Show Chart',
+            style: Theme.of(context).textTheme.headline6,
+          ),
+          Switch.adaptive(
+            activeColor: Theme.of(context).accentColor,
+            value: _showChart,
+            onChanged: (value) => setState(() => _showChart = value),
+          ),
+        ],
+      ),
+      _showChart
+          ? Container(
+              height: height * 0.7,
+              child: Chart(_recentTransactions),
+            )
+          : widget,
+    ];
+  }
+
+  List<Widget> _buildPortraitContent({height, widget}) {
+    return [
+      Container(
+        height: height * 0.3,
+        child: Chart(_recentTransactions),
+      ),
+      widget,
+    ];
+  }
+
+  Widget _buildIOSAppBar() {
+    return CupertinoNavigationBar(
+      middle: Text('Expense Tracker'),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          GestureDetector(
+            child: Icon(CupertinoIcons.add),
+            onTap: () => _startAddNewTransaction(context),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAndroidAppBar() {
+    return AppBar(
+      actions: [
+        IconButton(
+          icon: Icon(Icons.add),
+          onPressed: () => _startAddNewTransaction(context),
+        ),
+      ],
+      title: Text('Expense Tracker'),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
     final isLandscape = mediaQuery.orientation == Orientation.landscape;
-    final PreferredSizeWidget appBar = Platform.isIOS
-        ? CupertinoNavigationBar(
-            middle: Text('Expense Tracker'),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                GestureDetector(
-                  child: Icon(CupertinoIcons.add),
-                  onTap: () => _startAddNewTransaction(context),
-                ),
-              ],
-            ),
-          )
-        : AppBar(
-            actions: [
-              IconButton(
-                icon: Icon(Icons.add),
-                onPressed: () => _startAddNewTransaction(context),
-              ),
-            ],
-            title: Text('Expense Tracker'),
-          );
+    final PreferredSizeWidget appBar =
+        Platform.isIOS ? _buildIOSAppBar() : _buildAndroidAppBar();
     final contentHeight = mediaQuery.size.height -
         appBar.preferredSize.height -
         mediaQuery.padding.top;
@@ -148,33 +190,15 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           children: [
             if (isLandscape)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    'Show Chart',
-                    style: Theme.of(context).textTheme.headline6,
-                  ),
-                  Switch.adaptive(
-                    activeColor: Theme.of(context).accentColor,
-                    value: _showChart,
-                    onChanged: (value) => setState(() => _showChart = value),
-                  ),
-                ],
+              ..._buildLandscapeContent(
+                height: contentHeight,
+                widget: transactionListWidget,
               ),
-            if (isLandscape)
-              _showChart
-                  ? Container(
-                      height: contentHeight * 0.7,
-                      child: Chart(_recentTransactions),
-                    )
-                  : transactionListWidget,
             if (!isLandscape)
-              Container(
-                height: contentHeight * 0.3,
-                child: Chart(_recentTransactions),
+              ..._buildPortraitContent(
+                height: contentHeight,
+                widget: transactionListWidget,
               ),
-            if (!isLandscape) transactionListWidget,
           ],
         ),
       ),
